@@ -1,21 +1,33 @@
-# ns_charLoadout
-ns_charLoadout is a plugin for NutScript framework  
-It was developed and tested using NutScript 1.1B
+# stalker_weapons
+stalker_weapons - плагин, созданный для фреймворка NutScript    
+Разработка и тестирование проводились на версии NutScript 1.1B  
 
-The plugin brings new character creation step: loadout.  
-A player will be able to choose from certain equipment. 
-In order to configure it, use the function below. 
+Плагин делится на две компоненты: анимации и непосредственно оружие.  
+Система анимаций находится в /animations, оружия - в /weapons соответственно.   
+Для того, чтобы оружие работало верно, необходимо использовать специальные модели.  
+Это модели, скелет которых был портирован из S.T.A.L.K.E.R. в Garry's Mod.  
 
-# Functions
-## Shared
-### PLUGIN:RegisterLoadoutItem(faction, id, price, quantity)  
-faction - faction's enum  
-id - item's unique id   
-price - number of points taken when adding this item to loadout   
-quantity - how many of these items will player be able to take    
+Алгоритм использования системы следующий: 
+1. Оружие должно использоваться только с подходящими моделями.   
+Ссылки: модели SSK, модели Mysterious Zone. Подойдут любые модели, использующие скелет, аналогичный данному.   
+2. На сервер необходимо установить данный плагин и задать моделям верные анимации при помощи функции nut.anim.setModelClass(). Определение функции представлено ниже.  
+3. Для всего остального оружия, установленного на сервере, необходимо задать верный SWEP.HoldType.  
+Оружие работает со стандартными типами holdtype, база же использует собственные.  
+Если этого не сделать, анимация использования оружия с неверным holdtype не будет отображаться, на клиенте возникнут ошибки. 
+4. Само оружие хранится в .../weapons/weapons, его необходимо настроить. В исходном состоянии плагина настроены полностью только weapon_stalker_ak74.lua, weapon_stalker_desert_eagle.lua, weapon_stalker_toz34.lua   
+Остальное оружие настроено полностью, за исключением  
+SWEP.HolsterPos = Vector(...)   
+SWEP.HolsterAng = Vector(...)   
+Это вектора, используемые для позиционирования рук при опускании оружия от первого лица.   
+Если их не настроить, при опускании оружия возникнут ошибки.    
+Подобрать вектора можно ручным подбором (проблем не возникнет, для готовых примеров этот метод и использовался), или же при помощи Swep Construction Kit.  
 
-Use this function in PLUGIN:InitializedPlugins() hook in sh_plugin.lua
+# Функции
+## Клиент-сервер
+### nut.anim.setModelClass(model, animationClass)  
+model - строка, содержащая путь модели    
+animationClass - строка, содержащая ID класса анимаций, в нашем случае - stalker_human   
 
-# Example
+# Имплементация
 
-Check out sh_plugin.lua to see the implementation
+Пример использования nut.anim.setModelClass() находится в конце файла /animations/sh_animationSets.lua    
